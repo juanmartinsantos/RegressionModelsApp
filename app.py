@@ -1,18 +1,3 @@
-# Liraries
-import streamlit as st
-import pandas as pd
-import requests
-import base64
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.model_selection import train_test_split
-# from sklearn.metrics import mean_squared_error
-# from random import seed
-import sklearn.metrics
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import KFold
-from sklearn.svm import SVR
-from sklearn.ensemble import RandomForestRegressor
-
 #%%
 # ----------------------------------------------- #
 # --------------- Create Fuctions --------------- #
