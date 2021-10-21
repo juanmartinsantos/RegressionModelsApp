@@ -10,6 +10,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import KFold
 from sklearn.svm import SVR
 from sklearn.ensemble import RandomForestRegressor
+import seaborn as sns
 
 #%%
 # ----------------------------------------------- #
@@ -79,6 +80,11 @@ def get_show_parameters_FOLD(X, Y, indx):
     st.write('Output feature')
     st.info(Y.name)
 
+# Plot
+def ploting(df, feature):
+    plt = sns.displot(df, x=df.columns[feature])
+    return st.pyplot(fig=plt)
+
 #%%
 # ----------------------------------------------- #
 # ----------------- Add Models ------------------ #
@@ -97,9 +103,9 @@ def add_parameters(model_criterion):
         
     elif model_criterion == 'SVR':
         parameter_kernel = st.sidebar.radio('Kernel:',('rbf', 'poly', 'sigmoid'))
-        parameter_gamma = st.sidebar.radio('Gamma:',('scale', 'auto'))
+        # parameter_gamma = st.sidebar.slider('C:', 0, 10, 1, 1)
         params["parameter_kernel"] = parameter_kernel
-        params["parameter_gamma"] = parameter_gamma
+        # params["parameter_gamma"] = parameter_gamma
         
     elif model_criterion == 'Random Forest':
         parameter_n_estimators = st.sidebar.slider('Number of estimators:', 0, 500, 100, 20)
@@ -114,7 +120,8 @@ def get_regressor(model_criterion, parameters):
         rgs = LinearRegression()
         
     elif model_criterion == 'SVR':
-        rgs = SVR(kernel= parameters['parameter_kernel'], gamma=parameters['parameter_gamma'], verbose=False)
+        # rgs = SVR(kernel= parameters['parameter_kernel'], gamma=parameters['parameter_gamma'], verbose=False)
+        rgs = SVR(kernel= parameters['parameter_kernel'], verbose=False)
         
     elif model_criterion == 'Random Forest':
         rgs = RandomForestRegressor(n_estimators = parameters['parameter_n_estimators'], random_state = int(parameter_random_state))
@@ -207,7 +214,7 @@ def get_regressor(model_criterion, parameters):
     st.write(parameter_criterion + ' value:')
     st.info(round(reg_metrics(real=Y_test, predictions=Y_pred_test, error=parameter_criterion), 2))
 
-def build_model(df):
+def build_model(df, parameters):
     
     # Move the out variable to the end
     out = df[name_output]
@@ -323,16 +330,19 @@ with st.sidebar.subheader('5. Set Performance Metrics'):
 
 
 # ------ For dataset unseen
-with st.sidebar.subheader('6. Do you predict on a dataset unseen?'):
+with st.sidebar.subheader('6. Do you want to predict on an unseen dataset?'):
     make_criterion = st.sidebar.radio('Method:',('No', 'Yes'))
 if make_criterion == 'Yes':
     with st.sidebar.header('-- Upload your test dataset'):
         uploaded_file_test = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"], key=(123))
         # up_predictions =  st.sidebar.button('Upload')
 
-
-# Main panel
+# ----------------------------------------------- #
+# ------------------ Main panel ----------------- #
+# ----------------------------------------------- #
+# Subtitle
 if uploaded_file is not None or data_criterion == 'Yes': st.subheader('1. Dataset')
+
 
 # Displays the dataset
 if uploaded_file is not None:    
@@ -340,6 +350,9 @@ if uploaded_file is not None:
     df = pd.read_csv(uploaded_file, sep=";")
     st.markdown('**1.1. Glimpse of dataset**')
     st.write(df.head(5))
+    
+    
+    
     build_model(df)
 else:
     # LOAD A DATASET 
@@ -348,8 +361,13 @@ else:
         st.markdown('**1.1. Glimpse of dataset**')
         st.markdown('The sample dataset is used as the example.')
         st.write(df.head(5))
-        build_model(df)  
+        
+        # Plot
+        # ploting(df, feature=12)
+        
+        build_model(df, parameters)  
 
+# --- Prediction on unseen dataset
 if make_criterion == 'Yes' and uploaded_file_test is not None:
     st.markdown('**2. Predictions**:')
     df_unseen = pd.read_csv(uploaded_file_test, sep = ';')
@@ -359,5 +377,5 @@ if make_criterion == 'Yes' and uploaded_file_test is not None:
     if st.button('Run'):
         pred = pd.DataFrame(get_predict_unseen(df, df_unseen, parameters))
         st.download_button(label= 'Download', data= pred.to_csv(sep=';', index = False, header=False), file_name='predictions.csv')
-
-
+        
+        st.balloons()
