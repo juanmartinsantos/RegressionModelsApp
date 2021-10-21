@@ -268,12 +268,13 @@ if uploaded_file is not None or data_criterion == 'Yes': st.subheader('1. Datase
 
 
 # Displays the dataset
-if uploaded_file is not None and model_criterion != "-":    
+if uploaded_file is not None:    
     # LOAD A DATASET 
     df = pd.read_csv(uploaded_file, sep=";")
     st.markdown('**1.1. Glimpse of dataset**')
     st.write(df.head(5))
-    build_model(df)
+    if model_criterion != "-":
+        build_model(df, parameters)
     
 else:
     # LOAD A DATASET 
@@ -286,7 +287,8 @@ else:
         # Plot
         # ploting(df, feature=12)
         
-        build_model(df, parameters)  
+        if model_criterion != "-":
+            build_model(df, parameters)
 
 # --- Prediction on unseen dataset
 if make_criterion == 'Yes' and uploaded_file_test is not None:
