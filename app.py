@@ -92,7 +92,11 @@ def ploting(df, feature):
 
 def add_parameters(model_criterion):
     params = dict()
-    if model_criterion == 'k-NN':
+    
+    if model_criterion == '-':
+        st.sidebar.text("None")
+    
+    elif model_criterion == 'k-NN':
         parameter_n_neighbors = st.sidebar.slider('Number of neighbors:', 0, 12, 5, 1)
         parameter_type_algorithm = st.sidebar.radio('Choose a type of algorithm (dafault: auto):',('auto', 'ball_tree', 'kd_tree', 'brute'))
         params["parameter_n_neighbors"]=parameter_n_neighbors
@@ -236,7 +240,7 @@ with st.sidebar.header('2. Set Training Parameters'):
     split_size = type_training(train_criterion)
 
 with st.sidebar.subheader('3. Choose a Regression Algorithm'):
-    model_criterion = st.sidebar.selectbox('Methods:',('k-NN', 'Regression Linear', 'SVR', 'Random Forest'))
+    model_criterion = st.sidebar.selectbox('Models:', ('-','k-NN', 'Regression Linear', 'SVR', 'Random Forest'))
 
 # ------ Models
 with st.sidebar.subheader('4. Set Model Parameters'):
