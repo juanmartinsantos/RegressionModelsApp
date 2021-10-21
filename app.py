@@ -278,7 +278,7 @@ if uploaded_file is not None:
     
 else:
     # LOAD A DATASET 
-    if data_criterion == 'Yes' and model_criterion != "-":
+    if data_criterion == 'Yes':
         df = sample_data()
         st.markdown('**1.1. Glimpse of dataset**')
         st.markdown('The sample dataset is used as the example.')
