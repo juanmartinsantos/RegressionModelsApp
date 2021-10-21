@@ -117,6 +117,7 @@ def add_parameters(model_criterion):
     return params
 
 def get_regressor(model_criterion, parameters):
+    
     if model_criterion == 'k-NN':
         rgs = KNeighborsRegressor(n_neighbors=parameters['parameter_n_neighbors'], algorithm=parameters['parameter_type_algorithm'])
     
@@ -267,18 +268,16 @@ if uploaded_file is not None or data_criterion == 'Yes': st.subheader('1. Datase
 
 
 # Displays the dataset
-if uploaded_file is not None:    
+if uploaded_file is not None and model_criterion != "-":    
     # LOAD A DATASET 
     df = pd.read_csv(uploaded_file, sep=";")
     st.markdown('**1.1. Glimpse of dataset**')
     st.write(df.head(5))
-    
-    
-    
     build_model(df)
+    
 else:
     # LOAD A DATASET 
-    if data_criterion == 'Yes':
+    if data_criterion == 'Yes' and model_criterion != "-":
         df = sample_data()
         st.markdown('**1.1. Glimpse of dataset**')
         st.markdown('The sample dataset is used as the example.')
