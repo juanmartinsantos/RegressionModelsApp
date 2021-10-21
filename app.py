@@ -296,4 +296,4 @@ if make_criterion == 'Yes' and uploaded_file_test is not None:
         pred = pd.DataFrame(get_predict_unseen(df, df_unseen, parameters))
         st.download_button(label= 'Download', data= pred.to_csv(sep=';', index = False, header=False), file_name='predictions.csv')
         
-        st.balloons()
+        # st.balloons()
