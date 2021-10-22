@@ -1,4 +1,4 @@
 # Regression Models App
-This a firts version
+Version 1.0
 
 
