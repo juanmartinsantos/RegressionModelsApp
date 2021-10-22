@@ -82,6 +82,17 @@ def get_show_parameters_FOLD(X, Y, indx):
     st.write('Output feature')
     st.info(Y.name)
 
+def show_data(df, name_output):
+    st.markdown('**1.1. Glimpse of dataset**')
+    st.markdown('The sample dataset is used as the example.')
+    st.write(df.head(5))
+    st.write('Dimensionality of the dataset')
+    st.info(df.shape)
+    
+    if not name_output in df.columns:
+        st.warning("Invalid output name, stopping execution here")
+        st.stop()
+
 # Plot
 def ploting(df, feature):
     plt = sns.displot(df, x=df.columns[feature])
@@ -321,12 +332,7 @@ if uploaded_file is not None or data_criterion == 'Yes': st.subheader('1. Datase
 if uploaded_file is not None:    
     # LOAD A DATASET 
     df = pd.read_csv(uploaded_file, sep=";")
-    st.markdown('**1.1. Glimpse of dataset**')
-    st.write(df.head(5))
-    
-    if not name_output in df.columns:
-        st.warning("Invalid output name, stopping execution here")
-        st.stop()
+    show_data(df, name_output)
     
     if model_criterion != "-":
         build_model(df, parameters)
@@ -335,16 +341,7 @@ else:
     # LOAD A DATASET 
     if data_criterion == 'Yes':
         df = sample_data()
-        st.markdown('**1.1. Glimpse of dataset**')
-        st.markdown('The sample dataset is used as the example.')
-        st.write(df.head(5))
-        
-        # Plot
-        # ploting(df, feature=12)
-        
-        if not name_output in df.columns:
-            st.warning("Invalid output name, stopping execution here")
-            st.stop()
+        show_data(df, name_output)
         
         if model_criterion != "-":
             build_model(df, parameters)
