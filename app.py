@@ -317,13 +317,17 @@ if make_criterion == 'Yes':
 # Subtitle
 if uploaded_file is not None or data_criterion == 'Yes': st.subheader('1. Dataset')
 
-
 # Displays the dataset
 if uploaded_file is not None:    
     # LOAD A DATASET 
     df = pd.read_csv(uploaded_file, sep=";")
     st.markdown('**1.1. Glimpse of dataset**')
     st.write(df.head(5))
+    
+    if not name_output in df.columns:
+        st.warning("Invalid output name, stopping execution here")
+        st.stop()
+    
     if model_criterion != "-":
         build_model(df, parameters)
     
@@ -337,6 +341,10 @@ else:
         
         # Plot
         # ploting(df, feature=12)
+        
+        if not name_output in df.columns:
+            st.warning("Invalid output name, stopping execution here")
+            st.stop()
         
         if model_criterion != "-":
             build_model(df, parameters)
