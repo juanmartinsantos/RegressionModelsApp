@@ -102,7 +102,7 @@ def add_parameters(model_criterion):
         params["parameter_n_neighbors"]=parameter_n_neighbors
         params["parameter_type_algorithm"]=parameter_type_algorithm
     
-    elif model_criterion == 'Regression Linear':
+    elif model_criterion == 'Linear Regression':
         st.sidebar.text("None")
         
     elif model_criterion == 'SVR':
@@ -121,7 +121,7 @@ def get_regressor(model_criterion, parameters):
     if model_criterion == 'k-NN':
         rgs = KNeighborsRegressor(n_neighbors=parameters['parameter_n_neighbors'], algorithm=parameters['parameter_type_algorithm'])
     
-    elif model_criterion == 'Regression Linear':
+    elif model_criterion == 'Linear Regression':
         rgs = LinearRegression()
         
     elif model_criterion == 'SVR':
@@ -241,7 +241,7 @@ with st.sidebar.header('2. Set Training Parameters'):
     split_size = type_training(train_criterion)
 
 with st.sidebar.subheader('3. Choose a Regression Algorithm'):
-    model_criterion = st.sidebar.selectbox('Models:', ('-','k-NN', 'Regression Linear', 'SVR', 'Random Forest'))
+    model_criterion = st.sidebar.selectbox('Models:', ('-','k-NN', 'Linear Regression', 'SVR', 'Random Forest'))
 
 # ------ Models
 with st.sidebar.subheader('4. Set Model Parameters'):
