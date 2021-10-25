@@ -322,7 +322,7 @@ if make_criterion == 'Yes':
         uploaded_file_test = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"], key=(123))
         # up_predictions =  st.sidebar.button('Upload')
 
- st.sidebar.write("Developed by [Juan Martín](https://linktr.ee/juanmartinwebs)")       
+st.sidebar.write("Developed by [Juan Martín](https://linktr.ee/juanmartinwebs)")       
  
 # ----------------------------------------------- #
 # ------------------ Main panel ----------------- #
