@@ -274,7 +274,7 @@ def get_predict_unseen(df, df_unseen, parameters):
 # ----------------------------------------------- #
 st.write("""
 # Regression Models App
-Version 1.0
+Create your model
 """)
 
 # ------ Insert the logo 
@@ -291,7 +291,7 @@ with st.sidebar.header('1. Upload your training dataset'):
     name_output = st.sidebar.text_input('Enter the name of the output variable', ('output'))
 
 # ------ Control on image
-if uploaded_file is None and data_criterion == 'No': st.image('https://raw.githubusercontent.com/juanmartinsantos/RegressionModelsApp/main/docs/loading.png', use_column_width='auto', caption='Create your model')
+if uploaded_file is None and data_criterion == 'No': st.image('https://raw.githubusercontent.com/juanmartinsantos/RegressionModelsApp/main/docs/loading.png', use_column_width='auto')
 
 # ------ Sidebar - Specify parameter settings
 with st.sidebar.header('2. Set Training Parameters'):
