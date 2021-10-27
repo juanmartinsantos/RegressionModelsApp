@@ -291,7 +291,7 @@ with st.sidebar.header('1. Upload your training dataset'):
     name_output = st.sidebar.text_input('Enter the name of the output variable', ('output'))
 
 # ------ Control on image
-if uploaded_file is None and data_criterion == 'No': st.image('https://raw.githubusercontent.com/juanmartinsantos/RegressionModelsApp/main/docs/logo.png', use_column_width=True)
+if uploaded_file is None and data_criterion == 'No': st.image('https://raw.githubusercontent.com/juanmartinsantos/RegressionModelsApp/main/docs/loading.png', use_column_width=True)
 
 # ------ Sidebar - Specify parameter settings
 with st.sidebar.header('2. Set Training Parameters'):
