@@ -93,10 +93,6 @@ def show_data(df, name_output):
         st.warning("Invalid output name, stopping execution here")
         st.stop()
 
-# Plot
-def ploting(df, feature):
-    plt = sns.displot(df, x=df.columns[feature])
-    return st.pyplot(fig=plt)
 
 #%%
 # ----------------------------------------------- #
