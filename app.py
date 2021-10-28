@@ -14,6 +14,8 @@ import seaborn as sns
 from sklearn import linear_model
 import xgboost as xgb
 from sklearn.neural_network import MLPRegressor
+import matplotlib.pyplot as plt
+from sklearn import preprocessing
 
 #%%
 # ----------------------------------------------- #
@@ -43,6 +45,10 @@ def download_link(object_to_download, download_filename, download_link_text):
     b64 = base64.b64encode(object_to_download.encode()).decode()
     return f'<a href="data:file/txt;base64,{b64}" download="{download_filename}">{download_link_text}</a>'
 
+def normalization_data(df):
+    normalized_data = preprocessing.normalize(df)
+    normalized_data= pd.DataFrame(normalized_data, columns=df.columns)
+    return normalized_data
 
 def reg_metrics(real, predictions, error):
     if error == "MSE":
@@ -83,15 +89,58 @@ def get_show_parameters_FOLD(X, Y, indx):
     st.info(Y.name)
 
 def show_data(df, name_output):
+    parameter_normalize = st.radio("Do you want to normalize?", ("Absolute", "Normalized"))
     st.markdown('**1.1. Glimpse of dataset**')
     st.markdown('The sample dataset is used as the example.')
-    st.write(df.head(5))
+    if parameter_normalize == "Absolute":
+        st.write(df.head(5))
+    else: st.write(normalization_data(df).head(5))
     st.write('Dimensionality of the dataset')
     st.info(df.shape)
     
     if not name_output in df.columns:
         st.warning("Invalid output name, stopping execution here")
         st.stop()
+    return parameter_normalize
+
+# Plot
+def ploting(df, feature):
+    plt = sns.displot(df, x=df.columns[feature])
+    return st.pyplot(fig=plt)
+
+#%%
+# Plots
+def ploting_heatmap(df):
+    fig, ax = plt.subplots()
+    sns.heatmap(round(df.corr(),1), ax=ax, linewidths=.5, cbar_kws={"orientation": "horizontal"}, annot=True, cmap="YlGnBu")
+    st.write("Correlation Matrix:")
+    st.write(fig)
+
+def ploting_hist(df, feature):
+    fig, ax = plt.subplots()
+    sns.distplot(df[feature], ax=ax, hist_kws=dict(color='lightsteelblue', edgecolor="black", linewidth=1))
+    st.write(fig)
+
+def plot_descriptions(df):
+    descp = df.describe()
+    st.write(descp)
+
+def general_plot(df, plot_criterion):
+        
+        if plot_criterion == "-":
+            None
+    
+        elif plot_criterion == "Descriptions":
+            plot_descriptions(df)
+            
+        elif plot_criterion == "Correlation Matrix":
+            ploting_heatmap(df)
+            
+        elif plot_criterion == "Histogram":
+            feature_criterion = st.selectbox('Choose a column:', (df.columns.insert(0, "-")))
+            if feature_criterion != "-":
+                ploting_hist(df, feature= feature_criterion)
+
 
 
 #%%
@@ -153,7 +202,6 @@ def add_parameters(model_criterion):
         params["parameter_max_iter_MLP"] = parameter_max_iter_MLP
         params["parameter_activation"] = parameter_activation
         
-    
     return params
 
 def get_regressor(model_criterion, parameters, train_xgb=None, out_xgb=None):
@@ -274,11 +322,12 @@ def get_predict_unseen(df, df_unseen, parameters):
 # ----------------------------------------------- #
 st.write("""
 # Regression Models App
-Create your model
+Version 1.0
 """)
 
 # ------ Insert the logo 
 st.sidebar.image('https://raw.githubusercontent.com/juanmartinsantos/RegressionModelsApp/main/docs/logo.png', use_column_width=True)
+
 
 # ------ Sidebar - Collects user input features into dataframe
 with st.sidebar.header('1. Upload your training dataset'):
@@ -316,10 +365,9 @@ with st.sidebar.subheader('6. Do you want to predict on an unseen dataset?'):
 if make_criterion == 'Yes':
     with st.sidebar.header('-- Upload your test dataset'):
         uploaded_file_test = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"], key=(123))
-        # up_predictions =  st.sidebar.button('Upload')
 
-st.sidebar.write("Developed by [Juan Martín](https://linktr.ee/juanmartinwebs)")       
- 
+st.sidebar.write("Developed by [Juan Martín](https://linktr.ee/juanmartinwebs)")
+
 # ----------------------------------------------- #
 # ------------------ Main panel ----------------- #
 # ----------------------------------------------- #
@@ -330,7 +378,15 @@ if uploaded_file is not None or data_criterion == 'Yes': st.subheader('1. Datase
 if uploaded_file is not None:    
     # LOAD A DATASET 
     df = pd.read_csv(uploaded_file, sep=";")
-    show_data(df, name_output)
+    norm= show_data(df, name_output)
+        
+    if norm == "Normalized":
+        df=normalization_data(df)
+    
+    # Ploting
+    if model_criterion == "-":
+        plot_criterion = st.selectbox('Explore data:', ("-", "Descriptions", "Correlation Matrix", "Histogram"))
+        general_plot(df, plot_criterion)
     
     if model_criterion != "-":
         build_model(df, parameters)
@@ -339,10 +395,19 @@ else:
     # LOAD A DATASET 
     if data_criterion == 'Yes':
         df = sample_data()
-        show_data(df, name_output)
+        norm= show_data(df, name_output)
+        
+        if norm == "Normalized":
+            df=normalization_data(df)
+        
+        # Ploting
+        if model_criterion == "-":
+            plot_criterion = st.selectbox('Explore data:', ("-", "Descriptions", "Correlation Matrix", "Histogram"))
+            general_plot(df, plot_criterion)
         
         if model_criterion != "-":
             build_model(df, parameters)
+
 
 # --- Prediction on unseen dataset
 if make_criterion == 'Yes' and uploaded_file_test is not None:
@@ -356,3 +421,4 @@ if make_criterion == 'Yes' and uploaded_file_test is not None:
         st.download_button(label= 'Download', data= pred.to_csv(sep=';', index = False, header=False), file_name='predictions.csv')
         
         # st.balloons()
+        
