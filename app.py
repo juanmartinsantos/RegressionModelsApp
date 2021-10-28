@@ -322,7 +322,7 @@ def get_predict_unseen(df, df_unseen, parameters):
 # ----------------------------------------------- #
 st.write("""
 # Regression Models App
-Version 1.0
+Create your model
 """)
 
 # ------ Insert the logo 
