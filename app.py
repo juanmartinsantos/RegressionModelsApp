@@ -301,7 +301,7 @@ def build_model(df, parameters):
             output_train_fold = Y.iloc[indx[folds][0]]
             test_fold = X.iloc[indx[folds][1]]      
             
-            # Set model       
+            # Set model
             Y_pred_train = get_regressor(model_criterion, parameters)
             
             # Model
@@ -324,6 +324,9 @@ def build_model(df, parameters):
     st.write(parameter_criterion + ' value:')
     st.info(round(reg_metrics(real=Y_test, predictions=Y_pred_test, error=parameter_criterion), 2))
 
+#%% 
+# Predictions on unseen data
+
 def get_predict_unseen(df, df_unseen, parameters):
     # Move the out variable to the end
     out = df[name_output]
@@ -332,13 +335,24 @@ def get_predict_unseen(df, df_unseen, parameters):
     
     X_train = df.iloc[:,:-1] # Using all column except for the last column as X
     Y_train = df.iloc[:,-1] # Selecting the last column as Y
-        
-    Y_pred_train = get_regressor(model_criterion, parameters, train_xgb=X_train, out_xgb=Y_train)
-    if model_criterion != 'XGBoost':
-        Y_pred_train.fit(X_train, Y_train)
     
+    # Set model  
+    Y_pred_train = get_regressor(model_criterion, parameters)
+    
+    # Model
+    if model_criterion == 'XGBoost':
+        train_matrix = xgb.DMatrix(X_train, label= Y_train)
+        Y_pred_train = xgb.train(params=Y_pred_train, dtrain=train_matrix, num_boost_round= int(parameters["parameter_num_boost_round"]))
+        df_unseen= xgb.DMatrix(df_unseen)
+        
+    elif model_criterion == 'ELM':
+        Y_pred_train.fit(np.array(X_train), np.array(Y_train))
+        df_unseen = np.array(df_unseen)
+        
+    else: 
+        Y_pred_train.fit(X_train, Y_train)
+        
     # Predictions
-    else: df_unseen= xgb.DMatrix(df_unseen)
     Y_pred_test= Y_pred_train.predict(df_unseen)
     
     return Y_pred_test
@@ -445,6 +459,6 @@ if make_criterion == 'Yes' and uploaded_file_test is not None:
     
     if st.button('Run'):
         pred = pd.DataFrame(get_predict_unseen(df, df_unseen, parameters))
-        st.download_button(label= 'Download', data= pred.to_csv(sep=';', index = False, header=False), file_name='predictions.csv')
+        st.download_button(label= 'Download', data= pred.to_csv(sep=';', index = False, header=False), file_name= model_criterion + '_predictions.csv')
         
         # st.balloons()
