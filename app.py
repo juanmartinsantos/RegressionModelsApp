@@ -29,7 +29,7 @@ def sample_data():
     res = requests.get(url, allow_redirects=True)
     with open('Data1.csv','wb') as file:
         file.write(res.content)
-        data = pd.read_csv('Data1.csv', sep=",")
+        data = pd.read_csv('Data1.csv', sep=",", decimal=',')
     return data
 
 # Function to change the type of training
