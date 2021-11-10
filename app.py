@@ -27,9 +27,9 @@ import numpy as np
 def sample_data():
     url = 'https://raw.githubusercontent.com/juanmartinsantos/RegressionModelsApp/main/docs/SampleDataset.csv'
     res = requests.get(url, allow_redirects=True)
-    with open('Data1.csv','wb') as file:
+    with open('SampleDataset.csv','wb') as file:
         file.write(res.content)
-        data = pd.read_csv('Data1.csv', sep=",", decimal=',')
+        data = pd.read_csv('SampleDataset.csv', sep=",", decimal=',')
     return data
 
 # Function to change the type of training
@@ -105,11 +105,6 @@ def show_data(df, name_output):
         st.stop()
     return parameter_normalize
 
-# Plot
-def ploting(df, feature):
-    plt = sns.displot(df, x=df.columns[feature])
-    return st.pyplot(fig=plt)
-
 #%%
 # Plots
 def ploting_heatmap(df):
@@ -123,8 +118,8 @@ def ploting_hist(df, feature):
     sns.distplot(df[feature], ax=ax, hist_kws=dict(color='lightsteelblue', edgecolor="black", linewidth=1))
     st.write(fig)
 
-def plot_descriptions(df):
-    descp = df.describe()
+def plot_descriptions(data):
+    descp = data.describe()
     st.write(descp)
 
 def general_plot(df, plot_criterion):
@@ -369,7 +364,6 @@ Create your model
 # ------ Insert the logo 
 st.sidebar.image('https://raw.githubusercontent.com/juanmartinsantos/RegressionModelsApp/main/docs/logo.png', use_column_width=True)
 
-
 # ------ Sidebar - Collects user input features into dataframe
 with st.sidebar.header('1. Upload your training dataset'):
     uploaded_file = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"])
@@ -418,7 +412,7 @@ if uploaded_file is not None or data_criterion == 'Yes': st.subheader('1. Datase
 # Displays the dataset
 if uploaded_file is not None:    
     # LOAD A DATASET 
-    df = pd.read_csv(uploaded_file, sep=";")
+    df = pd.read_csv(uploaded_file, sep=";", decimal=',')
     norm= show_data(df, name_output)
         
     if norm == "Normalized":
@@ -439,7 +433,7 @@ else:
         norm= show_data(df, name_output)
         
         if norm == "Normalized":
-            df=normalization_data(df)
+            df= normalization_data(df)
         
         # Ploting
         if model_criterion == "-":
@@ -453,9 +447,14 @@ else:
 # --- Prediction on unseen dataset
 if make_criterion == 'Yes' and uploaded_file_test is not None:
     st.markdown('**2. Predictions**:')
-    df_unseen = pd.read_csv(uploaded_file_test, sep = ';')
+    df_unseen = pd.read_csv(uploaded_file_test, sep = ';', decimal=',')
     st.markdown('**2.1. Glimpse of predictions dataset**')
-    st.write(df_unseen.head(5))
+    
+    if norm == "Normalized":
+            df_unseen= normalization_data(df_unseen)
+            st.write(df_unseen.head(5))
+    else: 
+        st.write(df_unseen.head(5))
     
     if st.button('Run'):
         pred = pd.DataFrame(get_predict_unseen(df, df_unseen, parameters))
