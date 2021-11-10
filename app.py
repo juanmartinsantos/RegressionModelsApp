@@ -16,6 +16,8 @@ import xgboost as xgb
 from sklearn.neural_network import MLPRegressor
 import matplotlib.pyplot as plt
 from sklearn import preprocessing
+from sklearn_extensions.extreme_learning_machines.elm import ELMRegressor
+import numpy as np
 
 #%%
 # ----------------------------------------------- #
@@ -192,6 +194,12 @@ def add_parameters(model_criterion):
         params["parameter_max_depth"] = parameter_max_depth
         params["parameter_num_parallel_tree"] = parameter_num_parallel_tree
         
+    elif model_criterion == 'ELM':
+        parameter_n_hidden = st.sidebar.slider('Hidden layer:', 3, 100, 20, 1)
+        parameter_func_act = st.sidebar.selectbox('Activation function:',('tanh', 'sine', 'tribas', 'sigmoid', 'hardlim', 'softlim', 'gaussian', 'multiquadric', 'inv_multiquadric'))
+        params["parameter_n_hidden"]=parameter_n_hidden
+        params["parameter_func_act"]=parameter_func_act
+        
     elif model_criterion == 'MLPR':
         parameter_hidden_layer_sizes = st.sidebar.slider('Hidden Layer Sizes:', 10, 200, 100, 10)
         parameter_max_iter_MLP = st.sidebar.slider('Max. of Iterations:', 100, 20000, 1000, 100)
@@ -225,6 +233,9 @@ def get_regressor(model_criterion, parameters, train_xgb=None, out_xgb=None):
         rgs = {"booster":parameters["parameter_booster"], "objective": parameters["parameter_objective"], 
                               "max_depth": int(parameters["parameter_max_depth"]), 
                               "num_parallel_tree":int(parameters["parameter_num_parallel_tree"])}
+        
+    elif model_criterion == 'ELM':
+        rgs = ELMRegressor(n_hidden= parameters['parameter_n_hidden'], activation_func= parameters['parameter_func_act'], random_state = int(parameter_random_state))
         
     elif model_criterion == 'MLPR':
         rgs = MLPRegressor(hidden_layer_sizes=parameters['parameter_hidden_layer_sizes'], activation=parameters['parameter_activation'],
@@ -260,7 +271,11 @@ def build_model(df, parameters):
             train_matrix = xgb.DMatrix(X_train, label= Y_train)
             Y_pred_train = xgb.train(params=Y_pred_train, dtrain= train_matrix, num_boost_round= int(parameters["parameter_num_boost_round"]))
             X_test = xgb.DMatrix(X_test)
-            
+        
+        elif model_criterion == 'ELM':
+            Y_pred_train.fit(np.array(X_train), np.array(Y_train))
+            X_test = np.array(X_test)
+        
         else:
             Y_pred_train.fit(X_train, Y_train)
         
@@ -294,6 +309,10 @@ def build_model(df, parameters):
                 train_matrix = xgb.DMatrix(train_fold, label= output_train_fold)
                 Y_pred_train = xgb.train(params=Y_pred_train, dtrain=train_matrix, num_boost_round= int(parameters["parameter_num_boost_round"]))
                 test_fold= xgb.DMatrix(test_fold)
+                
+            elif model_criterion == 'ELM':
+                Y_pred_train.fit(np.array(train_fold), np.array(output_train_fold))
+                test_fold = np.array(test_fold)
                 
             else: 
                 Y_pred_train.fit(train_fold, output_train_fold)
@@ -357,7 +376,7 @@ with st.sidebar.header('2. Set Training Parameters'):
     split_size = type_training(train_criterion)
 
 with st.sidebar.subheader('3. Choose a Regression Algorithm'):
-    model_criterion = st.sidebar.selectbox('Models:', ('-','k-NN', 'SVR', 'Linear Regression', 'Lasso Regression', 'Random Forest', 'XGBoost', 'MLPR'))
+    model_criterion = st.sidebar.selectbox('Models:', ('-','k-NN', 'SVR', 'ELM', 'Linear Regression', 'Lasso Regression', 'Random Forest', 'XGBoost', 'MLPR'))
 
 # ------ Models
 with st.sidebar.subheader('4. Set Model Parameters'):
