@@ -141,8 +141,6 @@ def general_plot(df, plot_criterion):
             if feature_criterion != "-":
                 ploting_hist(df, feature= feature_criterion)
 
-
-
 #%%
 # ----------------------------------------------- #
 # ----------------- Add Models ------------------ #
@@ -185,8 +183,8 @@ def add_parameters(model_criterion):
     elif model_criterion == 'XGBoost':
         parameter_booster = st.sidebar.radio('booster:', ('tree', 'linear'))
         parameter_objective = st.sidebar.radio('objective:', ('squared', 'squaredlog', 'pseudohuber'))
-        parameter_num_boost_round = st.sidebar.slider('num_boost_round:',1,50,10,1)
-        parameter_max_depth = st.sidebar.slider('max_depth:',1,10,6,1)
+        parameter_num_boost_round = st.sidebar.slider('num_boost_round:',1,100,10,1)
+        parameter_max_depth = st.sidebar.slider('max_depth:',1,20,6,1)
         parameter_num_parallel_tree = st.sidebar.slider('num_parallel_tree:',1,10,1,1)
         params["parameter_booster"] = 'gb' + parameter_booster
         params["parameter_objective"] = 'reg:' + parameter_objective + 'error'
@@ -196,7 +194,7 @@ def add_parameters(model_criterion):
         
     elif model_criterion == 'MLPR':
         parameter_hidden_layer_sizes = st.sidebar.slider('Hidden Layer Sizes:', 10, 200, 100, 10)
-        parameter_max_iter_MLP = st.sidebar.slider('Max. of Iterations:', 100, 20000, 10000, 100)
+        parameter_max_iter_MLP = st.sidebar.slider('Max. of Iterations:', 100, 20000, 1000, 100)
         parameter_activation = st.sidebar.radio('Activation function:', ('relu', 'identity', 'logistic', 'tanh'))
         params["parameter_hidden_layer_sizes"] = parameter_hidden_layer_sizes
         params["parameter_max_iter_MLP"] = parameter_max_iter_MLP
@@ -224,10 +222,9 @@ def get_regressor(model_criterion, parameters, train_xgb=None, out_xgb=None):
         rgs = RandomForestRegressor(n_estimators = parameters['parameter_n_estimators'], random_state = int(parameter_random_state))
     
     elif model_criterion == 'XGBoost':
-        parameters_xgboost = {"booster":parameters["parameter_booster"], "objective": parameters["parameter_objective"], 
-                              "max_depth": int(parameters["parameter_max_depth"]), "num_parallel_tree":int(parameters["parameter_num_parallel_tree"])}
-        train_xgb= xgb.DMatrix(train_xgb, label= out_xgb)
-        rgs = xgb.train(params=parameters_xgboost, dtrain=train_xgb,num_boost_round= int(parameters["parameter_num_boost_round"]))
+        rgs = {"booster":parameters["parameter_booster"], "objective": parameters["parameter_objective"], 
+                              "max_depth": int(parameters["parameter_max_depth"]), 
+                              "num_parallel_tree":int(parameters["parameter_num_parallel_tree"])}
         
     elif model_criterion == 'MLPR':
         rgs = MLPRegressor(hidden_layer_sizes=parameters['parameter_hidden_layer_sizes'], activation=parameters['parameter_activation'],
@@ -240,28 +237,32 @@ def get_regressor(model_criterion, parameters, train_xgb=None, out_xgb=None):
 # ---------------- Create Models ---------------- #
 # ----------------------------------------------- #
 def build_model(df, parameters):
-    # Move the out variable to the end
+    # Move the output variable to the end
     out = df[name_output]
     df = df.drop(name_output, axis=1)
     df[name_output] = out
     
     X = df.iloc[:,:-1] # Using all column except for the last column as X
-    Y = df.iloc[:,-1] # Selecting the last column as Y
+    Y = df.iloc[:,-1] # Selecting the last column as Y ("output")
 
     # ----- Data splitting ----- #
     if train_criterion == "Data-split":
-        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=(100-split_size)/100,  random_state= int(parameter_random_state))
+        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=(100-split_size)/100, random_state= int(parameter_random_state))
         
         # Show Method Parameters
         get_show_parameters(X_train, X_test, X, Y)
             
-        st.subheader('2. Model Performance')
+        # Set model    
+        Y_pred_train = get_regressor(model_criterion, parameters)
+        
         # Model
-        Y_pred_train = get_regressor(model_criterion, parameters, train_xgb=X, out_xgb=Y)
-        if model_criterion != 'XGBoost': 
-            Y_pred_train.fit(X_train, Y_train)
-        else:
+        if model_criterion == 'XGBoost': 
+            train_matrix = xgb.DMatrix(X_train, label= Y_train)
+            Y_pred_train = xgb.train(params=Y_pred_train, dtrain= train_matrix, num_boost_round= int(parameters["parameter_num_boost_round"]))
             X_test = xgb.DMatrix(X_test)
+            
+        else:
+            Y_pred_train.fit(X_train, Y_train)
         
         # Predictions
         Y_pred_test= Y_pred_train.predict(X_test)
@@ -278,22 +279,29 @@ def build_model(df, parameters):
         
         # Predictions set are created
         Y_pred_test = pd.DataFrame(index=range(len(X)), columns=['predictions'])
-        # Set model       
-        Y_pred_train = get_regressor(model_criterion, parameters, train_xgb=X, out_xgb=Y)
         
         for folds in range(len(indx)):
-            # Seleccion los idx de las particiones
-            train_fold=X.iloc[indx[folds][0]]
-            output_train_fold= Y.iloc[indx[folds][0]]
-            test_fold=X.iloc[indx[folds][1]]      
+            # Select partition indexes
+            train_fold = X.iloc[indx[folds][0]]
+            output_train_fold = Y.iloc[indx[folds][0]]
+            test_fold = X.iloc[indx[folds][1]]      
+            
+            # Set model       
+            Y_pred_train = get_regressor(model_criterion, parameters)
+            
             # Model
-            if model_criterion != 'XGBoost':
+            if model_criterion == 'XGBoost':
+                train_matrix = xgb.DMatrix(train_fold, label= output_train_fold)
+                Y_pred_train = xgb.train(params=Y_pred_train, dtrain=train_matrix, num_boost_round= int(parameters["parameter_num_boost_round"]))
+                test_fold= xgb.DMatrix(test_fold)
+                
+            else: 
                 Y_pred_train.fit(train_fold, output_train_fold)
             
             # Predictions
-            else: test_fold= xgb.DMatrix(test_fold)
             Y_pred_test.iloc[indx[folds][1]]= Y_pred_train.predict(test_fold).reshape(-1,1)
     
+    st.subheader('2. Model Performance')
     st.write(parameter_criterion + ' value:')
     st.info(round(reg_metrics(real=Y_test, predictions=Y_pred_test, error=parameter_criterion), 2))
 
@@ -421,4 +429,3 @@ if make_criterion == 'Yes' and uploaded_file_test is not None:
         st.download_button(label= 'Download', data= pred.to_csv(sep=';', index = False, header=False), file_name='predictions.csv')
         
         # st.balloons()
-        
