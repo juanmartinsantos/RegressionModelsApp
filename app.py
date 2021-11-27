@@ -384,7 +384,8 @@ with st.sidebar.header('2. Set Training Parameters'):
     split_size = type_training(train_criterion)
 
 with st.sidebar.subheader('3. Choose a Regression Algorithm'):
-    model_criterion = st.sidebar.selectbox('Models:', ('-','k-NN', 'SVR', 'ELM', 'Linear Regression', 'Lasso Regression', 'Random Forest', 'XGBoost', 'MLPR'))
+    # model_criterion = st.sidebar.selectbox('Models:', ('-','k-NN', 'SVR', 'ELM', 'Linear Regression', 'Lasso Regression', 'Random Forest', 'XGBoost', 'MLPR'))
+    model_criterion = st.sidebar.selectbox('Models:', ('-','k-NN', 'SVR', 'Linear Regression', 'Lasso Regression', 'Random Forest', 'MLPR'))
 
 # ------ Models
 with st.sidebar.subheader('4. Set Model Parameters'):
