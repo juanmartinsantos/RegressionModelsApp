@@ -6,9 +6,9 @@ In Regression Models App, you can create models for regression tasks.
 The regression learning paradigms included are:
 
 - k-Nearest Neighbor
-- Support Vector Machines
-- Linear regression
-- Lasso regression
-- Random forest
+- Support Vector Machine
+- Linear Regression
+- Lasso Regression
+- Random Forest
 - Multi-layer Perceptron Regressor
 
