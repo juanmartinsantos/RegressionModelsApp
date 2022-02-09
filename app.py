@@ -444,3 +444,44 @@ if make_criterion == 'Yes' and uploaded_file_test is not None:
         
         # st.balloons()
 
+########################################################################
+# --------------------------- Custom style --------------------------- #
+########################################################################
+# Remove “Made with Streamlit”
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
+
+# Add footer
+footer="""<style>
+a:link , a:visited{
+color: Sky Blue;
+background-color: transparent;
+text-decoration: underline;
+}
+
+a:hover,  a:active {
+color: red;
+background-color: transparent;
+text-decoration: underline;
+}
+
+.footer {
+position: fixed;
+left: 0;
+bottom: 0;
+width: 100%;
+background-color: transparent;
+color: gray;
+text-align: center;
+}
+</style>
+<div class="footer">
+<p>This api has been shared in the <a style='display: block; text-align: center;' href="https://discuss.streamlit.io/t/weekly-roundup-snowflake-animations-podcast-summaries-optimization-apps-and-more/20490" target="_blank">Streamlit Weekly Roundup</a></p>
+</div>
+"""
+st.markdown(footer,unsafe_allow_html=True)
