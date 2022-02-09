@@ -465,7 +465,7 @@ text-decoration: underline;
 }
 
 a:hover,  a:active {
-color: red;
+color: purple;
 background-color: transparent;
 text-decoration: underline;
 }
