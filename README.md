@@ -9,6 +9,7 @@ Has been included:
 - Other style changes
 
 #########################################
+
 Version 1.0
 
 In the Regression Models App, you can create models for regression tasks and make predictions on them.
