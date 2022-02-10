@@ -17,11 +17,11 @@ In the Regression Models App, you can create models for regression tasks and mak
 
 The regression learning paradigms included are:
 
-- k-Nearest Neighbor (k-NN)
-- Support Vector Machine (SVM)
-- Extreme Learning Machine (ELM)
+- k-Nearest Neighbor (*k-NN*)
+- Support Vector Machine (*SVM*)
+- Extreme Learning Machine (*ELM*)
 - Linear Regression
 - Lasso Regression
 - Random Forest
-- Extreme Gradient Boosting (XGBoost)
+- Extreme Gradient Boosting (*XGBoost*)
 - Multi-layer Perceptron Regressor
