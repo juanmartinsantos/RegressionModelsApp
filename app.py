@@ -48,8 +48,10 @@ def download_link(object_to_download, download_filename, download_link_text):
     return f'<a href="data:file/txt;base64,{b64}" download="{download_filename}">{download_link_text}</a>'
 
 def normalization_data(df):
-    normalized_data = preprocessing.normalize(df)
-    normalized_data= pd.DataFrame(normalized_data, columns=df.columns)
+    scaler = preprocessing.MinMaxScaler()
+    names = df.columns
+    d = scaler.fit_transform(df)
+    normalized_data = pd.DataFrame(d, columns=names)
     return normalized_data
 
 def reg_metrics(real, predictions, error):
@@ -93,16 +95,27 @@ def get_show_parameters_FOLD(X, Y, indx):
 def show_data(df, name_output):
     parameter_normalize = st.radio("Do you want to normalize?", ("Absolute", "Normalized"))
     st.markdown('**1.1. Glimpse of dataset**')
-    st.markdown('The sample dataset is used as the example.')
+    if name_output == 'output':
+        st.markdown('The sample dataset is used as the example.')
+    
+    if df.isnull().values.any():
+        st.markdown('*This dataset contained $\b missing values$, which has been $\b removed$*')
+        df = df.dropna()
+    
     if parameter_normalize == "Absolute":
-        st.write(df.head(5))
-    else: st.write(normalization_data(df).head(5))
+        st.dataframe(df)
+        # st.write(df.head(5))
+    else:
+        st.dataframe(normalization_data(df))
+        # st.write(normalization_data(df).head(5))
+    
     st.write('Dimensionality of the dataset')
     st.info(df.shape)
     
     if not name_output in df.columns:
         st.warning("Invalid output name, stopping execution here")
         st.stop()
+        
     return parameter_normalize
 
 #%%
@@ -347,13 +360,20 @@ st.sidebar.image('https://raw.githubusercontent.com/juanmartinsantos/RegressionM
 
 # ------ Sidebar - Collects user input features into dataframe
 with st.sidebar.header('1. Upload your training dataset'):
+    tpsep = st.sidebar.selectbox('Type of sep:', (';', ','))    
     uploaded_file = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"])
     # Create link to download CSV file
     tmp_download_link = download_link(sample_data(), 'SampleDataset.csv', 'Example CSV input file')
     st.sidebar.markdown(tmp_download_link, unsafe_allow_html=True)
     # Command of data criterion
-    data_criterion = st.sidebar.radio('Would you like a sample dataset?', ('No','Yes'))
-    name_output = st.sidebar.text_input('Enter the name of the output variable', ('output'))
+    if uploaded_file is None: data_criterion = st.sidebar.radio('Would you like a sample dataset?', ('No','Yes'))
+    # Show output variable
+    if uploaded_file is not None:         
+        uploaded_file.seek(0)
+        df_names = pd.read_csv(uploaded_file, sep=tpsep,low_memory=False)
+        name_output = st.sidebar.selectbox('Select the goal variable:', (df_names.columns.insert(0, "-")))
+    else:
+        name_output = 'output'
 
 # ------ Control on image
 if uploaded_file is None and data_criterion == 'No': st.image('https://raw.githubusercontent.com/juanmartinsantos/RegressionModelsApp/main/docs/loading.png', use_column_width=False)
@@ -394,8 +414,10 @@ if uploaded_file is not None or data_criterion == 'Yes': st.subheader('1. Datase
 # Displays the dataset
 if uploaded_file is not None:    
     # LOAD A DATASET 
-    df = pd.read_csv(uploaded_file, sep=";", decimal=',')
-    norm= show_data(df, name_output)
+    uploaded_file.seek(0)
+    df = pd.read_csv(uploaded_file, sep=tpsep, decimal=',')
+    norm = show_data(df, name_output)
+    df = df.dropna()
         
     if norm == "Normalized":
         df=normalization_data(df)
@@ -412,7 +434,7 @@ else:
     # LOAD A DATASET 
     if data_criterion == 'Yes':
         df = sample_data()
-        norm= show_data(df, name_output)
+        norm = show_data(df, name_output)
         
         if norm == "Normalized":
             df= normalization_data(df)
@@ -443,6 +465,7 @@ if make_criterion == 'Yes' and uploaded_file_test is not None:
         st.download_button(label= 'Download', data= pred.to_csv(sep=';', index = False, header=False), file_name= model_criterion + '_predictions.csv')
         
         # st.balloons()
+
 
 ########################################################################
 # --------------------------- Custom style --------------------------- #
