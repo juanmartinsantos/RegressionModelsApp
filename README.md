@@ -1,4 +1,17 @@
 # Regression Models App
+Version 1.1
+
+Has been included:
+
+- Add "sep" option for read_csv
+- Output variable can now be selected from columns names
+- Missing values are now automatically removed
+- Other style changes
+
+#########################################
+#########################################
+#########################################
+
 Version 1.0
 
 In the Regression Models App, you can create models for regression tasks and make predictions on them.
