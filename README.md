@@ -1,5 +1,6 @@
 # Regression Models App
-Version 1.1
+
+### Version 1.1
 
 Has been included:
 
@@ -10,7 +11,7 @@ Has been included:
 
 #########################################
 
-Version 1.0
+### Version 1.0
 
 In the Regression Models App, you can create models for regression tasks and make predictions on them.
 
