@@ -103,11 +103,11 @@ def show_data(df, name_output):
         df = df.dropna()
     
     if parameter_normalize == "Absolute":
-        st.dataframe(df)
-        # st.write(df.head(5))
+        # st.dataframe(df)
+        st.write(df.head(5))
     else:
-        st.dataframe(normalization_data(df))
-        # st.write(normalization_data(df).head(5))
+        # st.dataframe(normalization_data(df))
+        st.write(normalization_data(df).head(5))
     
     st.write('Dimensionality of the dataset')
     st.info(df.shape)
