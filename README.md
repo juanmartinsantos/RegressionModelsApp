@@ -1,5 +1,7 @@
 # [Regression Models App](https://share.streamlit.io/juanmartinsantos/regressionmodelsapp/main/app.py)
 
+This app apply different regression paradigms, in which you can set the main parameters.
+
 ### Version 1.1
 
 Has been included:
