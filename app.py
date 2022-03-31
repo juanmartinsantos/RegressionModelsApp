@@ -403,7 +403,7 @@ if make_criterion == 'Yes':
     with st.sidebar.header('-- Upload your test dataset'):
         uploaded_file_test = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"], key=(123))
 
-st.sidebar.write("Developed by [Juan Martín](https://linktr.ee/juanmartinwebs)")
+st.sidebar.write("Developed by [Juan Martín](https://snipfeed.co/juanmartin)")
 
 # ----------------------------------------------- #
 # ------------------ Main panel ----------------- #
