@@ -504,7 +504,7 @@ text-align: center;
 }
 </style>
 <div class="footer">
-<p>This api has been shared in the <a style='display: block; text-align: center;' href="https://discuss.streamlit.io/t/weekly-roundup-snowflake-animations-podcast-summaries-optimization-apps-and-more/20490" target="_blank">Streamlit's Weekly Roundup</a></p>
+<p>This app has been shared in the <a style='display: block; text-align: center;' href="https://discuss.streamlit.io/t/weekly-roundup-snowflake-animations-podcast-summaries-optimization-apps-and-more/20490" target="_blank">Streamlit's Weekly Roundup</a></p>
 </div>
 """
 st.markdown(footer,unsafe_allow_html=True)
