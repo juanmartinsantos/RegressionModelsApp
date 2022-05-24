@@ -1,23 +1,21 @@
  # Liraries
-import streamlit as st
-import pandas as pd
-import requests
 import base64
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.model_selection import train_test_split
-import sklearn.metrics
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import KFold
-from sklearn.svm import SVR
-from sklearn.ensemble import RandomForestRegressor
-import seaborn as sns
-from sklearn import linear_model
-import xgboost as xgb
-from sklearn.neural_network import MLPRegressor
-import matplotlib.pyplot as plt
-from sklearn import preprocessing
-from sklearn_extensions.extreme_learning_machines.elm import ELMRegressor # (scikit-learn==0.24.2)
+import requests
 import numpy as np
+import pandas as pd
+import seaborn as sns
+import xgboost as xgb
+import streamlit as st
+import matplotlib.pyplot as plt
+from sklearn_extensions.extreme_learning_machines.elm import ELMRegressor # (scikit-learn==0.24.2)
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+from sklearn.model_selection import train_test_split, KFold
+from sklearn.linear_model import LinearRegression, Lasso
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.neural_network import MLPRegressor
+from sklearn import preprocessing
+from sklearn.svm import SVR
 
 #%%
 # ----------------------------------------------- #
@@ -56,16 +54,16 @@ def normalization_data(df):
 
 def reg_metrics(real, predictions, error):
     if error == "MSE":
-        mse_error= sklearn.metrics.mean_squared_error(real, predictions, squared=True)
+        mse_error = mean_squared_error(real, predictions, squared=True)
         return mse_error
     if error == "RMSE":
-        rmse_error= sklearn.metrics.mean_squared_error(real, predictions, squared=False)
+        rmse_error = mean_squared_error(real, predictions, squared=False)
         return rmse_error
     if error == "r2":
-        rsq_error= sklearn.metrics.r2_score(real, predictions)
+        rsq_error= r2_score(real, predictions)
         return rsq_error
     if error == "MAE":
-        mae_error= sklearn.metrics.mean_absolute_error(real, predictions)
+        mae_error = mean_absolute_error(real, predictions)
         return mae_error
 
 def get_show_parameters(X_train, X_test, X, Y):
@@ -227,7 +225,7 @@ def get_regressor(model_criterion, parameters):
         rgs = LinearRegression()
     
     elif model_criterion == 'Lasso Regression':
-        rgs = linear_model.Lasso(alpha= parameters['parameter_alpha'],selection=parameters['parameter_selection'],random_state= int(parameter_random_state))
+        rgs = Lasso(alpha= parameters['parameter_alpha'],selection=parameters['parameter_selection'],random_state= int(parameter_random_state))
     
     elif model_criterion == 'Random Forest':
         rgs = RandomForestRegressor(n_estimators = parameters['parameter_n_estimators'], random_state = int(parameter_random_state))
