@@ -1,4 +1,4 @@
-[![LinkedIn][linkedin-shield]][http://linkedin.com/in/juanmmartin]
+[![LinkedIn](http://linkedin.com/in/juanmmartin)]
 
 # [Regression Models App](https://share.streamlit.io/juanmartinsantos/regressionmodelsapp/main/app.py)
 
