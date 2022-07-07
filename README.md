@@ -1,3 +1,5 @@
+[![LinkedIn][linkedin-shield]][http://linkedin.com/in/juanmmartin]
+
 # [Regression Models App](https://share.streamlit.io/juanmartinsantos/regressionmodelsapp/main/app.py)
 
 This app apply different regression paradigms, in which you can set the main parameters.
