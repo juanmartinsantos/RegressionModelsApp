@@ -1,4 +1,4 @@
-[![LinkedIn](http://linkedin.com/in/juanmmartin)]
+[![LinkedIn](https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555)](http://linkedin.com/in/juanmmartin)
 
 # [Regression Models App](https://share.streamlit.io/juanmartinsantos/regressionmodelsapp/main/app.py)
 
@@ -32,3 +32,4 @@ The regression learning paradigms included are:
 
 #########################################
 # You can visit this app [here](https://share.streamlit.io/juanmartinsantos/regressionmodelsapp/main/app.py)
+
