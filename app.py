@@ -1,13 +1,12 @@
  # Liraries
 import base64
 import requests
-import numpy as np
+# import numpy as np
 import pandas as pd
 import seaborn as sns
 import xgboost as xgb
 import streamlit as st
 import matplotlib.pyplot as plt
-from sklearn_extensions.extreme_learning_machines.elm import ELMRegressor # (scikit-learn==0.24.2)
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.model_selection import train_test_split, KFold
 from sklearn.linear_model import LinearRegression, Lasso
@@ -17,7 +16,6 @@ from sklearn.neural_network import MLPRegressor
 from sklearn import preprocessing
 from sklearn.svm import SVR
 
-#%%
 # ----------------------------------------------- #
 # --------------- Create Fuctions --------------- #
 # ----------------------------------------------- #
@@ -195,13 +193,7 @@ def add_parameters(model_criterion):
         params["parameter_max_depth"] = parameter_max_depth
         params["parameter_booster"] = 'gb' + parameter_booster
         params["parameter_objective"] = 'reg:' + parameter_objective + 'error'
-        
-    elif model_criterion == 'ELM':
-        parameter_n_hidden = st.sidebar.slider('Hidden layer:', 3, 100, 20, 1)
-        parameter_func_act = st.sidebar.selectbox('Activation function:',('multiquadric', 'tanh', 'sine', 'tribas', 'sigmoid', 'hardlim', 'softlim', 'gaussian', 'inv_multiquadric'))
-        params["parameter_n_hidden"]=parameter_n_hidden
-        params["parameter_func_act"]=parameter_func_act
-        
+                
     elif model_criterion == 'MLPR':
         parameter_hidden_layer_sizes = st.sidebar.slider('Hidden Layer Sizes:', 10, 200, 100, 10)
         parameter_max_iter_MLP = st.sidebar.slider('Max. of Iterations:', 100, 20000, 1000, 100)
@@ -234,9 +226,6 @@ def get_regressor(model_criterion, parameters):
         rgs = xgb.XGBRegressor(n_estimators=parameters['parameter_num_estimators'], max_depth=parameters['parameter_max_depth'], 
                                booster=parameters["parameter_booster"], objective=parameters["parameter_objective"], random_state=int(parameter_random_state))
         
-    elif model_criterion == 'ELM':
-        rgs = ELMRegressor(n_hidden= parameters['parameter_n_hidden'], activation_func= parameters['parameter_func_act'], random_state = int(parameter_random_state))
-        
     elif model_criterion == 'MLPR':
         rgs = MLPRegressor(hidden_layer_sizes=parameters['parameter_hidden_layer_sizes'], activation=parameters['parameter_activation'],
                            max_iter=parameters['parameter_max_iter_MLP'], random_state=int(parameter_random_state))
@@ -268,12 +257,7 @@ def build_model(df, parameters):
         Y_pred_train = get_regressor(model_criterion, parameters)
         
         # Model        
-        if model_criterion == 'ELM':
-            Y_pred_train.fit(np.array(X_train), np.array(Y_train))
-            X_test = np.array(X_test)
-        
-        else:
-            Y_pred_train.fit(X_train, Y_train)
+        Y_pred_train.fit(X_train, Y_train)
         
         # Predictions
         Y_pred_test= Y_pred_train.predict(X_test)
@@ -301,12 +285,7 @@ def build_model(df, parameters):
             Y_pred_train = get_regressor(model_criterion, parameters)
             
             # Model
-            if model_criterion == 'ELM':
-                Y_pred_train.fit(np.array(train_fold), np.array(output_train_fold))
-                test_fold = np.array(test_fold)
-                
-            else: 
-                Y_pred_train.fit(train_fold, output_train_fold)
+            Y_pred_train.fit(train_fold, output_train_fold)
             
             # Predictions
             Y_pred_test.iloc[indx[folds][1]]= Y_pred_train.predict(test_fold).reshape(-1,1)
@@ -332,12 +311,7 @@ def get_predict_unseen(df, df_unseen, parameters):
     Y_pred_train = get_regressor(model_criterion, parameters)
     
     # Model
-    if model_criterion == 'ELM':
-        Y_pred_train.fit(np.array(X_train), np.array(Y_train))
-        df_unseen = np.array(df_unseen)
-        
-    else: 
-        Y_pred_train.fit(X_train, Y_train)
+    Y_pred_train.fit(X_train, Y_train)
         
     # Predictions
     Y_pred_test= Y_pred_train.predict(df_unseen)
@@ -383,8 +357,7 @@ with st.sidebar.header('2. Set Training Parameters'):
     split_size = type_training(train_criterion)
 
 with st.sidebar.subheader('3. Choose a Regression Algorithm'):
-    model_criterion = st.sidebar.selectbox('Models:', ('-','k-NN', 'SVR', 'ELM', 'Linear Regression', 'Lasso Regression', 'Random Forest', 'XGBoost', 'MLPR'))
-    # model_criterion = st.sidebar.selectbox('Models:', ('-','k-NN', 'SVR', 'Linear Regression', 'Lasso Regression', 'Random Forest', 'XGBoost', 'MLPR'))
+    model_criterion = st.sidebar.selectbox('Models:', ('-','k-NN', 'SVR', 'Linear Regression', 'Lasso Regression', 'Random Forest', 'XGBoost', 'MLPR'))
 
 # ------ Models
 with st.sidebar.subheader('4. Set Model Parameters'):
