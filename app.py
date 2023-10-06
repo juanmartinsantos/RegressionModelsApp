@@ -1,4 +1,4 @@
- # Liraries
+# Liraries
 import base64
 import requests
 # import numpy as np
@@ -16,6 +16,7 @@ from sklearn.neural_network import MLPRegressor
 from sklearn import preprocessing
 from sklearn.svm import SVR
 
+#%%
 # ----------------------------------------------- #
 # --------------- Create Fuctions --------------- #
 # ----------------------------------------------- #
@@ -130,22 +131,48 @@ def ploting_hist(df, feature):
 def plot_descriptions(data):
     descp = data.describe()
     st.write(descp)
+    
+def ploting_boxplot(df, feature):
+    fig, ax = plt.subplots()
+    sns.boxplot(y=df[feature], ax=ax)
+    st.write(f"Box plot for {feature}")
+    st.pyplot(fig)
+
+def ploting_scatter(df, x_feature, y_feature):
+    fig, ax = plt.subplots()
+    sns.scatterplot(data=df, x=x_feature, y=y_feature, ax=ax)
+    st.write(f"Scatter Plot for {x_feature} vs {y_feature}")
+    st.pyplot(fig)
 
 def general_plot(df, plot_criterion):
         
-        if plot_criterion == "-":
-            None
+    if plot_criterion == "-":
+        None
     
-        elif plot_criterion == "Descriptions":
-            plot_descriptions(df)
+    elif plot_criterion == "Descriptions":
+        plot_descriptions(df)
             
-        elif plot_criterion == "Correlation Matrix":
-            ploting_heatmap(df)
+    elif plot_criterion == "Correlation Matrix":
+        ploting_heatmap(df)
             
-        elif plot_criterion == "Histogram":
-            feature_criterion = st.selectbox('Choose a column:', (df.columns.insert(0, "-")))
-            if feature_criterion != "-":
-                ploting_hist(df, feature= feature_criterion)
+    elif plot_criterion == "Histogram":
+        feature_criterion = st.selectbox('Choose a column for Histogram:', (df.columns.insert(0, "-")))
+        if feature_criterion != "-":
+            ploting_hist(df, feature=feature_criterion)
+                
+    elif plot_criterion == "Box Plots":
+        feature_criterion = st.selectbox('Choose a column for Box Plot:', (df.columns.insert(0, "-")))
+        if feature_criterion != "-":
+            ploting_boxplot(df, feature=feature_criterion)
+            
+    elif plot_criterion == "Scatter Plots":
+        st.subheader("Scatter Plots")
+        x_feature = st.selectbox('Choose a column for X axis:', df.columns.tolist())
+        y_feature = st.selectbox('Choose a column for Y axis:', df.columns.tolist())
+        if x_feature and y_feature:
+            ploting_scatter(df, x_feature, y_feature)
+
+
 
 #%%
 # ----------------------------------------------- #
@@ -395,7 +422,7 @@ if uploaded_file is not None:
     
     # Ploting
     if model_criterion == "-":
-        plot_criterion = st.selectbox('Explore data:', ("-", "Descriptions", "Correlation Matrix", "Histogram"))
+        plot_criterion = st.selectbox('Explore data:', ("-", "Descriptions", "Correlation Matrix", "Histogram", "Box Plots", "Scatter Plots"))
         general_plot(df, plot_criterion)
     
     if model_criterion != "-":
@@ -412,7 +439,7 @@ else:
         
         # Ploting
         if model_criterion == "-":
-            plot_criterion = st.selectbox('Explore data:', ("-", "Descriptions", "Correlation Matrix", "Histogram"))
+            plot_criterion = st.selectbox('Explore data:', ("-", "Descriptions", "Correlation Matrix", "Histogram", "Box Plots", "Scatter Plots"))
             general_plot(df, plot_criterion)
         
         if model_criterion != "-":
