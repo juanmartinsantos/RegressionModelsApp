@@ -23,7 +23,6 @@ The regression learning paradigms included are:
 
 - k-Nearest Neighbor (*k-NN*)
 - Support Vector Machine (*SVM*)
-- Extreme Learning Machine (*ELM*)
 - Linear Regression
 - Lasso Regression
 - Random Forest
